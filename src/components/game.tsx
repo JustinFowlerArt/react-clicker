@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
+import {randomizePosition, randomizeEnemyStats} from './utilities'
 import { Enemy } from './enemy';
+import { Reset } from './reset';
 
 interface Enemy {
 	id: number;
@@ -7,49 +9,42 @@ interface Enemy {
 	size: number;
 	hp: number;
 	value: number;
+  speed: number;
 }
 
 export function Game() {
 	const [score, setScore] = useState(0);
 	const [enemies, setEnemies] = useState<Array<Enemy>>([]);
-	const [counter, setCounter] = useState(1);
+	const [counter, setCounter] = useState(0);
 
-  const countRef = useRef(counter);
-  countRef.current = counter;
+	const countRef = useRef(counter);
+	countRef.current = counter;
 
 	useEffect(() => {
-		const initalizer = setInterval(() => {
-      const stats = randomizeEnemyStats();
+		const initializer = setInterval(() => {
+			const stats = randomizeEnemyStats();
 			setEnemies(enemies => [
 				...enemies,
 				{
 					id: countRef.current,
-					position: { x: randomizePosition(360), y: randomizePosition(360) },
+					position: { x: randomizePosition(320), y: randomizePosition(320) },
 					size: stats.size,
 					hp: stats.hp,
 					value: stats.value,
+          speed: 10,
 				},
 			]);
 			setCounter(counter => counter + 1);
-      console.log(stats)
 		}, 1000);
-    return () => {
-      clearInterval(initalizer);
-    };
+		return () => {
+			clearInterval(initializer);
+		};
 	}, []);
 
-	const randomizePosition = (multiplier: number) => {
-		return Math.ceil(Math.random() * multiplier);
-	};
-
-  const randomizeEnemyStats = () => {
-    const statBase = Math.ceil(Math.random() * 10);
-    const size = statBase * 5;
-    const hp = statBase;
-    const value = statBase;
-    return {size, hp, value}
+  function moveEnemies() {
+    enemies.forEach(enemy => enemy.position.x += enemy.speed)
   }
-
+  
 	const handleClick = (
 		e: React.MouseEvent<HTMLButtonElement>,
 		id: number,
@@ -66,12 +61,18 @@ export function Game() {
 		}
 	};
 
+	const handleReset = () => {
+    setScore(0);
+		setEnemies([]);
+		setCounter(0);
+	};
+
 	return (
 		<div className='flex flex-col items-center p-4'>
 			<h1 className='text-3xl'>React Idler</h1>
 			<h2 className='text-xl'>{score}</h2>
 			<div className='relative bg-slate-500 w-96 h-96 m-4'>
-				<div className='absolute right-48 top-48 w-4 h-4 bg-white'></div>
+				<div className='absolute right-48 top-48 w-4 h-4 bg-white rounded-full'></div>
 				{enemies?.map(enemy => (
 					<Enemy
 						key={enemy.id}
@@ -84,6 +85,7 @@ export function Game() {
 					/>
 				))}
 			</div>
+			<Reset handleReset={handleReset} />
 		</div>
 	);
 }
