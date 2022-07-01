@@ -2,16 +2,11 @@ interface Props {
 	id: number;
 	position: { x: number; y: number };
 	size: number;
-	hp: number;
 	value: number;
-	handleClick: (
-		e: React.MouseEvent<HTMLButtonElement>,
-		id: number,
-		hp: number
-	) => void;
+	handleClick: (e: React.MouseEvent<HTMLButtonElement>, id: number) => void;
 }
 
-export function Enemy({ id, position, size, hp, value, handleClick }: Props) {
+export function Enemy({ id, position, size, value, handleClick }: Props) {
 	const dynamicStyles = {
 		left: position.x,
 		top: position.y,
@@ -22,9 +17,9 @@ export function Enemy({ id, position, size, hp, value, handleClick }: Props) {
 	return (
 		<button
 			type='button'
-			className={`absolute bg-black rounded-full`}
+			className='absolute bg-black rounded-full'
 			style={dynamicStyles}
-			onMouseDown={e => handleClick(e, id, hp)}
+			onMouseDown={e => handleClick(e, id)}
 			value={value}
 		></button>
 	);
