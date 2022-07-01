@@ -1,10 +1,11 @@
-# react-dev-environment
+# react-clicker
 
 Tools that still need to be implemented:
+
 - Continuous Integration
-    - Jenkins
+  - Jenkins
 - Error Logging
-    - Track.js
+  - Track.js
 - Automated Deployment
-    - API: Heroku
-    - UI: Surge
+  - API: Heroku
+  - UI: Surge
