@@ -15,16 +15,10 @@ interface Enemy {
 	speed: number;
 }
 
-interface Player {
-	damage: number;
-}
-
 export function Game() {
 	const [score, setScore] = useState(0);
-	const [highScore, setHighScore] = useState(0);
-	const [playerStats, setPlayerStats] = useState<Player>({
-		damage: 1,
-	});
+	const [addedScore, setAddedScore] = useState(0);
+	const [displayAddedScore, setDisplayAddedScore] = useState(false);
 	const [enemies, setEnemies] = useState<Array<Enemy>>([]);
 	const [counter, setCounter] = useState(0);
 	const [timer, setTimer] = useState(1000);
@@ -70,15 +64,17 @@ export function Game() {
 		const value = parseInt(e.currentTarget.value);
 		const hitEnemy = enemies.findIndex(enemy => enemy.id === id);
 		const updatedEnemies = [...enemies];
-		updatedEnemies[hitEnemy].hp -= playerStats.damage + upgrades[0].modifier;
+		updatedEnemies[hitEnemy].hp -= upgrades[0].modifier;
 		setEnemies(updatedEnemies);
 		if (updatedEnemies[hitEnemy].hp <= 0) {
-			const scoreModifier =
+			const scoreIncrement =
 				value + Math.ceil(Math.sqrt(value) * upgrades[1].modifier);
-			setScore(score + scoreModifier);
-			if (score >= highScore) {
-				setHighScore(score + scoreModifier);
-			}
+			setScore(score + scoreIncrement);
+			setAddedScore(scoreIncrement);
+			setDisplayAddedScore(true);
+			setTimeout(() => {
+				setDisplayAddedScore(false);
+			}, 1000);
 			setEnemies(enemies.filter(enemy => enemy.id !== id));
 		}
 	};
@@ -94,9 +90,14 @@ export function Game() {
 		<main className='flex justify-center items-center'>
 			<div className='flex flex-col items-center p-4'>
 				<h1 className='text-3xl'>React Clicker</h1>
-				<h2 className='text-xl'>
-					Score: {score} - High Score: {highScore}
-				</h2>
+				<div className='grid grid-cols-3'>
+					<h2 className='col-span-2 text-xl text-right'>Score: {score} </h2>
+					{displayAddedScore && (
+						<span className='col-span-1 text-left text-green-600'>
+							+{addedScore}
+						</span>
+					)}
+				</div>
 				<div className='relative bg-slate-500 w-96 h-96 m-4'>
 					<div className='absolute right-48 top-48 w-4 h-4 bg-white rounded-full'></div>
 					{enemies?.map(enemy => (
